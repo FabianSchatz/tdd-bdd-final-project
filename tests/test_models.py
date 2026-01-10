@@ -104,3 +104,18 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+    def test_read_a_product(self):
+        "It should Retrieve a product correctly"
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        #print(f"Created product id={product.id} name={product.name}")
+        self.assertIsNotNone(product.id)
+
+        #Retrieve producct from database
+        retrieved_product = Product.find(product_id = product.id)
+        self.assertEqual(retrieved_product.name, product.name)
+        self.assertEqual(retrieved_product.description, product.description)
+        self.assertEqual(retrieved_product.price, product.price)
+        self.assertEqual(retrieved_product.available, product.available)
+        self.assertEqual(retrieved_product.category, product.category)
