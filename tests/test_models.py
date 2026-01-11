@@ -160,6 +160,65 @@ class TestProductModel(unittest.TestCase):
 
 
 
+    def test_list_all_products(self):
+        "It should List all product stored in the database"
+        products_before = Product.all()
+        self.assertEqual(len(products_before), 0)
+
+        for _ in range (5):
+            product1 = ProductFactory()
+            product1.id = None
+            product1.create()
+            
+
+        products = Product.all()
+        self.assertEqual(len(products), 5)
+        
+
+    def test_find_product_by_name(self):
+        "It should Find all the products with a given name"
+        products = ProductFactory.create_batch(5)
+        for product in products:
+            product.id = None
+            product.create()
+
+        name = products[0].name
+        reps = len([product for product in products if product.name == name])
+        found_products = Product.find_by_name(name)
+        self.assertEqual(found_products.count(), reps)
+        for product in found_products:
+            self.assertEqual(product.name, name)
+
+
+
+    def test_find_product_by_availibility(self):
+        "It should Find all the products which are available (or which are not)"
+        products = ProductFactory.create_batch(10)
+        for product in products:
+            product.id = None
+            product.create()
+
+        availability = products[0].available
+        reps = len([product for product in products if product.available == availability])
+        found_products = Product.find_by_availability(availability)
+        self.assertEqual(found_products.count(), reps)
+        for product in found_products:
+            self.assertEqual(product.available, availability)
+    
+
+    def test_find_product_by_category(self):
+        "It should Find all the products in a category"
+        products = ProductFactory.create_batch(10)
+        for product in products:
+            product.id = None
+            product.create()
+
+        category = products[0].category
+        reps = len([product for product in products if product.category == category])
+        found_products = Product.find_by_category(category)
+        self.assertEqual(found_products.count(), reps)
+        for product in found_products:
+            self.assertEqual(product.category, category)
     
 
 
