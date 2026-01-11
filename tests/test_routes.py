@@ -179,11 +179,38 @@ class TestProductRoutes(TestCase):
 
     def test_get_product_not_found(self):
         "It should throw an error message if the product couldn't be found"
-        response = self.client.get(f"{BASE_URL}/cannotbeanID_")
+        response = self.client.get(f"{BASE_URL}/0")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
     # test cases for updating a product
+    def test_update_product(self):
+        """It should Update a product"""
+        product_list = self._create_products(count = 1)
+        test_product = product_list[0]
+        #update the product
+        updated_product = test_product
+        updated_product.description = "updated"
+        response = self.client.put(f"{BASE_URL}/{test_product.id}", json=updated_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get_json()["description"], "updated")
+
+        #test the error message
+        response_error = self.client.put(f"{BASE_URL}/0", json=updated_product.serialize())
+        self.assertEqual(response_error.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    #Test deletion of product
+    def test_delete_product(self):
+        """It should Delete a product"""
+        product_list = self._create_products(count = 1)
+        test_product = product_list[0]
+        response = self.client.delete(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+
+    #Test listing products
 
 
 
