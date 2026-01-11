@@ -119,3 +119,26 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(retrieved_product.price, product.price)
         self.assertEqual(retrieved_product.available, product.available)
         self.assertEqual(retrieved_product.category, product.category)
+
+
+    def test_update_product(self):
+        "It should Update a product correctly"
+        product = ProductFactory()
+        product.id = None
+        product.create()
+        product_id = product.id
+        product.description = "Test description"
+        
+        product.update()
+        db.session.remove() #removes the session's cache / current context
+
+        
+        retrieved_product = Product.find(product_id)
+        self.assertEqual(retrieved_product.description, "Test description")
+        products_list = Product.all()
+        self.assertEqual(len(products_list),1)
+        self.assertEqual(products_list[0].id, product_id)
+        self.assertEqual(products_list[0].description, "Test description")
+        
+        
+
