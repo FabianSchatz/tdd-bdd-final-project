@@ -134,7 +134,7 @@ class TestProductRoutes(TestCase):
         # Uncomment this code once READ is implemented
         #
 
-        # # Check that the location header was correct
+        # Check that the location header was correct
         # response = self.client.get(location)
         # self.assertEqual(response.status_code, status.HTTP_200_OK)
         # new_product = response.get_json()
@@ -166,6 +166,27 @@ class TestProductRoutes(TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+
+
+    # test cases for reading product
+    def test_read_product(self):
+        """It should Read a Product"""
+        product_list = self._create_products(count = 1)
+        test_product = product_list[0]
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get_json(), test_product.serialize())
+
+    def test_get_product_not_found(self):
+        "It should throw an error message if the product couldn't be found"
+        response = self.client.get(f"{BASE_URL}/cannotbeanID_")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    # test cases for updating a product
+
+
+
 
     ######################################################################
     # Utility functions
