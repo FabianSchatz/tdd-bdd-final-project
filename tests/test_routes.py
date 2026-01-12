@@ -211,6 +211,54 @@ class TestProductRoutes(TestCase):
 
 
     #Test listing products
+    def test_list_all(self):
+        """It should list all products"""
+        product_list = self._create_products(count = 5)
+        response = self.client.get(BASE_URL)
+        all_products = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(all_products), 5)
+
+    def test_list_by_name(self):
+        """It should List all product with a given name"""
+        for _ in range(3):
+            test_product = ProductFactory()
+            test_product.name = "Name"
+            response = self.client.post(BASE_URL, json=test_product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        for _ in range(2):
+            test_product = ProductFactory()
+            response = self.client.post(BASE_URL, json=test_product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.get(BASE_URL, query_string="name=Name")
+        all_products = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(all_products), 3)
+
+
+    def test_list_by_category(self):
+        """It should List all product with a given category"""
+        product_list = self._create_products(count=5)
+        category = product_list[0].category
+        products_correct = [product for product in product_list if product.category == category]
+        count = len(products_correct) 
+        response = self.client.get(BASE_URL, query_string=f"category={category.name}")
+        all_products = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(all_products), count)
+
+
+    def test_list_by_availability(self):
+        """It should List all product with a given availability"""
+        product_list = self._create_products(count=5)
+        products_available = [product for product in product_list if product.available is True]
+        count = len(products_available) 
+        response = self.client.get(BASE_URL, query_string="available=true")
+        all_products = response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(all_products), count)
+
 
 
 

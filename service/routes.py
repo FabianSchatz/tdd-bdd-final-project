@@ -20,7 +20,7 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
 
@@ -101,6 +101,39 @@ def create_products():
 #
 # PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
 #
+
+# @app.route("/products", methods=["GET"])
+# def list_products():
+#     """Returns all products"""
+#     app.logger.info("Request to list all products")
+#     all_products = Product.all()
+#     results = [product.serialize() for product in all_products]
+#     app.logger.info("[%s] Products returned", len(results))
+#     return results, status.HTTP_200_OK
+
+
+@app.route("/products", methods=["GET"])
+def list_products():
+    """Returns list of products"""
+    app.logger.info("Request to list product by argument (if no arguments then all)")
+    selected_products = []
+    name = request.args.get("name")
+    category = request.args.get("category")
+    available = request.args.get("available")
+    if name:
+        selected_products = Product.find_by_name(name)
+    elif category:
+        category_value = getattr(Category, category.upper())
+        selected_products = Product.find_by_category(category_value)
+    elif available:
+        availability = available.lower() in ["true", "yes", "1"]
+        selected_products = Product.find_by_availability(availability)
+    else:
+        selected_products = Product.all()
+    results = [product.serialize() for product in selected_products]
+    app.logger.info("[%s] Products returned", len(results))
+    return results, status.HTTP_200_OK
+
 
 ######################################################################
 # R E A D   A   P R O D U C T
